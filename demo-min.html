@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html dir="ltr" lang="en-US">
+<html dir="ltr" lang="en-US" id='html'>
 
 <head>
 
@@ -34,9 +34,34 @@
 
     <hr>
         <p></p><center><input type="button" value="Start webcam feed" onclick="button_callback()" id="startButton" style="display:none;"></center><p></p>
-        <p></p><center><canvas width="640" height="480" style="display:none;"></canvas></center><p></p>
+        <div>
+            <span class='buttontoggle' onclick='trigger_mini()'> mini </span>
+            <span class='buttontoggle' onclick='trigger_cam()'> camera </span>
+            <span class='buttontoggle' onclick='trigger_dark()'> night\day </span>
+        </div>
+        <p ></p><center style="display:inherit;" id='canvas_str'><canvas width="640" height="480"  style='display:none'></canvas></center><p></p>
 
         <script>
+        function trigger_dark(){
+            if (html.style.backgroundColor === 'white'){
+                html.style.backgroundColor = 'black';
+            } else {
+                html.style.backgroundColor = 'white';
+            }
+        }
+        function trigger_cam(){
+            if (canvas_str.style.display === 'inherit'){
+                canvas_str.style.display = 'none';
+            } else {
+                canvas_str.style.display = 'inherit';
+            }
+            
+        }
+        function trigger_mini(){
+            html.style.display = 'none';
+        }
+
+
         let avgx = 0;
         let avgy = 0;
 
@@ -229,7 +254,15 @@
 
 <body>
     <style type="text/css">
-    html, body {margin: 0; height: 100%; overflow: hidden}
+        #html {
+            background-color: white;
+        }
+        html, body {
+            margin: 0;
+            height: 100%;
+            overflow: hidden;
+            transition: 1s;
+        }
         body {
             height: 100vh;
             width: 100vw;
@@ -252,6 +285,12 @@
 
         #Keyboard {
             margin: 3px!important;
+        }
+        .buttontoggle {
+            background-color: rgba(0,255,255,0.4);
+            margin: 7px;
+            font-size: 20px;
+            cursor: pointer;
         }
 
     </style>
@@ -331,9 +370,6 @@
         Tone.Buffer.on('error', function() {
             document.querySelector("#loading").innerHTML = "I'm sorry, there has been an error loading the samples. This demo works best on on the most up-to-date version of Chrome.";
         })
-
-
-
 
         // create Nexus UI //
         // Nexus.colors.accent = "#f00"
