@@ -262,6 +262,7 @@
             <h1> CLICK BOX</h1>
             <h1> MOVE HEAD</h1>
             <h1> VOLUME ON</h1>
+            <h1 id='song_display'></h1>
    <!--          <p> Loads four random instruments from the list. Refresh for different instruments.</p>
     --><!--          <div id="Selector"></div>
             <br/>
@@ -278,6 +279,7 @@
         NProgress.start();
         // load samples / choose 4 random instruments from the list //
         chooseFour = ['piano', 'bass-electric', 'bassoon', 'cello', 'clarinet', 'contrabass', 'flute', 'french-horn', 'guitar-acoustic', 'guitar-electric','guitar-nylon', 'harmonium', 'harp', 'organ', 'saxophone', 'trombone', 'trumpet', 'tuba', 'violin', 'xylophone']
+        emojis = ['🎹','🎸','basoon','🎻','clarinet','🎻','flute','french-horn','🎸','🎸','🎸','harmonium','harp','🎹','🎷','🎺','🎺','🎺','🎻','🎹']
         shuffle(chooseFour);
         chooseFour = chooseFour.slice(0, 4);
 
@@ -371,16 +373,21 @@
         // global var for time and note count
         let sound_num = 0
         let prev_play = Date.now()
-        // never gonna give you up https://noobnotes.net/never-gonna-give-rick-astley/
-        // todo - build scraper for noobnotes. use space as delimter, no consecutives. use 4 as normal, ^before is 5,. is 3, # as C#4, drop *, -, remove new lines 
-        // let sound_to_play = ['A4','B4','D5','B4','F5','F5','E5','A4','B4','D5','B4','E5','E5','D5','C5','B4','A4','B4','D5','B4','D5','E5','C4','A4','A4','E5','D5','A4','B4','D5','B4','F5','F5','E5','A4','B4','D5','B4','A5','C5','D5','C5','B4','A4','B4','D5','B4','D5','E5','C4','A4','A4','E5','D5']
+        /// notice scraper in py
+         // let sound_to_play = ['A4','B4','D5','B4','F5','F5','E5','A4','B4','D5','B4','E5','E5','D5','C5','B4','A4','B4','D5','B4','D5','E5','C4','A4','A4','E5','D5','A4','B4','D5','B4','F5','F5','E5','A4','B4','D5','B4','A5','C5','D5','C5','B4','A4','B4','D5','B4','D5','E5','C4','A4','A4','E5','D5']
 
         // //sounds of music
-        let sound_to_play=['C4','D4','E4','C4','E4','C4','E4','D4','E4','F4','F4','E4','D4','F4','E4','F4','G4','E4','G4','E4','G4','F4','G4','A4','A4','G4','F4','A4','G4','C4','D4','E4','F4','G4','A4','A4','D4','E4','F4','G4','A4','B4','B4','E4','F4','G4','A4','B4','C4','C4','B4','A4','F4','B4','G4','C4','G4','E4','D4']
+        // let sound_to_play=['C4','D4','E4','C4','E4','C4','E4','D4','E4','F4','F4','E4','D4','F4','E4','F4','G4','E4','G4','E4','G4','F4','G4','A4','A4','G4','F4','A4','G4','C4','D4','E4','F4','G4','A4','A4','D4','E4','F4','G4','A4','B4','B4','E4','F4','G4','A4','B4','C4','C4','B4','A4','F4','B4','G4','C4','G4','E4','D4']
+        let songs = [['a-whole-new-world-aladdin', 'B4', 'A4', 'C5', 'B4', 'G4', 'D4', 'B4', 'A4', 'C5', 'B4', 'G4', 'B4', 'A4', 'A4', 'G4', 'B4', 'A4', 'F#4', 'A4', 'G4', 'F#4', 'G4', 'E4', 'F#4', 'A4', 'G4', 'D4', 'B4', 'A4', 'C5', 'B4', 'G4', 'D4', 'B4', 'A4', 'C5', 'B4', 'G4', 'B4', 'A4', 'A4', 'G4', 'B4', 'A4', 'F#4', 'A4', 'G4', 'F#4', 'G4', 'E4', 'F#4', 'A4', 'G4', 'B4', 'B4', 'C5', 'E5', 'D5', 'B4', 'C5', 'E5', 'D5', 'A4', 'C5', 'B4', 'B4', 'B4', 'C5', 'D5', 'F#5', 'E5', 'D5', 'B4', 'F#5', 'G5', 'D5', 'G4', 'B4', 'A4', 'G4', 'F#4', 'G4', 'A4', 'B4', 'C5', 'E5', 'D5', 'B4', 'C5', 'E5', 'D5', 'A4', 'C5', 'B4', 'B4', 'B4', 'C5', 'D5', 'F#5', 'E5', 'D5', 'B4', 'F#5', 'G5', 'D5', 'G4', 'B4', 'A4', 'G4', 'A4', 'B4', 'A4', 'G4', 'F#4', 'F#4', 'G4', 'B4', 'A4', 'G4', 'A4', 'B4', 'A4', 'G4', 'F#4', 'F#4', 'G4'], ['let-it-go-frozen-disney', 'D4', 'E4', 'E4', 'E4', 'E4', 'E4', 'E4', 'D4', 'C4', 'C4', 'C4', 'C4', 'D4', 'D4', 'C4', 'B3', 'A3', 'A3', 'E4', 'E4', 'E4', 'E4', 'G4', 'G4', 'E4', 'C4', 'C4', 'D4', 'E4', 'D4', 'C4', 'D4', 'E4', 'E4', 'G4', 'A4', 'G4', 'E4', 'G4', 'G4', 'G4', 'F4', 'E4', 'F4', 'E4', 'E4', 'E4', 'D4', 'C4', 'D4', 'D4', 'E4', 'D4', 'C4', 'A3', 'D4', 'D4', 'G4', 'G4', 'D4', 'D4', 'A4', 'A4', 'A4', 'G4', 'A4', 'A4', 'G4', 'A4', 'B4', 'C5', 'B4', 'B4', 'D4', 'D4', 'G4', 'G4', 'D4', 'D4', 'A4', 'A4', 'G4', 'A4', 'B4', 'C5', 'A4', 'B4', 'C5', 'G4', 'G4', 'D5', 'C5', 'A4', 'A4', 'A4', 'A4', 'B4', 'C5', 'A4', 'B4', 'C5', 'G4', 'E5', 'E5', 'D5', 'C5', 'D5', 'E5', 'E5', 'F5', 'E5', 'D5', 'C5', 'D5', 'C5', 'G5', 'E5', 'D5', 'C5', 'C5', 'G5', 'E5', 'C5', 'C5', 'C5', 'B4', 'G4', 'G4', 'F4', 'F4', 'F4', 'E4', 'F4', 'E4', 'F4', 'F4', 'E4', 'C4', 'C4', 'E4', 'E4', 'E4', 'E4', 'E4', 'C4', 'C4', 'G4', 'G4', 'F4', 'E4', 'D4', 'C4', 'C4', 'E4', 'E4', 'E4', 'G4', 'A4', 'G4', 'G4', 'C5', 'C5', 'B4', 'A4', 'A4', 'D4', 'D4', 'G4', 'G4', 'D4', 'D4', 'G4', 'A4', 'G4', 'A4', 'G4', 'A4', 'B4', 'C5', 'D5', 'G4', 'D4', 'D4', 'G4', 'G4', 'D4', 'G4', 'D4', 'A4', 'B4', 'C5', 'A4', 'B4', 'C5', 'G4', 'D5', 'D5', 'C5', 'A4', 'A4', 'A4', 'A4', 'A4', 'B4', 'C5', 'A4', 'B4', 'C5', 'G4', 'E5', 'E5', 'D5', 'D5', 'E5', 'E5', 'F5', 'D5', 'D5', 'C5', 'G5', 'E5', 'D5', 'C5', 'G5', 'E5', 'C5', 'C5', 'C5', 'B4', 'G4', 'G4', 'F4', 'F4', 'F4', 'E4', 'F4', 'E4', 'F4', 'F4', 'E4', 'C4', 'F4', 'E4', 'F4', 'G4', 'A4', 'Bb4', 'C5', 'D#5', 'D5', 'C5', 'Bb4', 'C5', 'F4', 'E4', 'F4', 'G4', 'A4', 'Bb4', 'C5', 'D#5', 'D4', 'C5', 'Bb4', 'D#5', 'D5', 'C5', 'D5', 'C5', 'G4', 'F#4', 'G4', 'A4', 'B4', 'C5', 'D5', 'F5', 'E5', 'D5', 'C5', 'D5', 'E5', 'E5', 'E4', 'E5', 'C5', 'C5', 'C5', 'D5', 'C5', 'C5', 'E5', 'F5', 'F5', 'F5', 'F5', 'E5', 'G4', 'G4', 'D5', 'C5', 'A4', 'A4', 'A4', 'A4', 'A4', 'B4', 'C5', 'D5', 'A4', 'B4', 'C5', 'G4', 'E5', 'E5', 'D5', 'C5', 'E5', 'E4', 'F5', 'E5', 'D5', 'C5', 'G5', 'E5', 'D5', 'C5', 'C5', 'G5', 'E5', 'F5', 'E5', 'D5', 'C5', 'C5', 'C5', 'B4', 'C5', 'G5', 'D#4', 'F4', 'F4', 'E4', 'F4', 'E4', 'F4', 'F4', 'E4', 'C4'], ['close-to-you-carpenters', 'A3', 'C4', 'G4', 'G4', 'F4', 'G4', 'A4', 'E4', 'E4', 'G4', 'B4', 'E4', 'G4', 'C5', 'A3', 'C4', 'G4', 'A3', 'C4', 'A4', 'G4', 'A3', 'C4', 'G4', 'A3', 'C4', 'G4', 'G4', 'F4', 'G4', 'A4', 'E4', 'E4', 'G4', 'B4', 'E4', 'G4', 'C5', 'A3', 'C4', 'G4', 'A3', 'C4', 'A4', 'G4', 'A3', 'C4', 'G4', 'C4', 'C4', 'D4', 'D4', 'E4', 'E4', 'D4', 'D4', 'C4', 'C4', 'D4', 'D4', 'E4', 'E4', 'D4', 'C4', 'G4', 'G4', 'A4', 'A4', 'B4', 'B4', 'A4', 'G4', 'B4', 'A4', 'B4', 'C5', 'C5', 'C5', 'C5', 'C5', 'C5', 'C5', 'C5', 'C5', 'C5', 'C5', 'C5', 'C5', 'A4', 'B4', 'C5', 'D5', 'A3', 'C4', 'G4', 'G4', 'F4', 'G4', 'A4', 'E4', 'E4', 'G4', 'B4', 'E4', 'G4', 'C5', 'A3', 'C4', 'G4', 'A3', 'C4', 'A4', 'G4', 'A3', 'C4', 'G4', 'C5', 'B4', 'C5', 'B4', 'A4', 'B4', 'G4', 'G4', 'E4'], ['youve-got-friend-toy-story-disney', 'E4', 'G4', 'E4', 'A4', 'G4', 'E4', 'A4', 'C5', 'A4', 'C5', 'A4', 'G4', 'A4', 'F4', 'G4', 'C4', 'B4', 'B4', 'C5', 'A4', 'G4', 'C5', 'A4', 'G4', 'A4', 'E4', 'C4', 'E4', 'E4', 'E4', 'A4', 'B4', 'D5', 'C4', 'G4', 'E4', 'C4', 'D#4', 'E4', 'C5', 'A4', 'C5', 'A4', 'G4', 'E4', 'C4', 'E4', 'C5', 'C5', 'A4', 'G4', 'C5', 'A4', 'A4']]
+
+        song_to_play = songs[Math.floor(Math.random() *(songs.length))];
+        song_display.innerHTML = song_to_play[0];
+        sound_to_play = song_to_play.slice(1);
+
         // play next sound out of list, if less than 1/3 second ago
         function play_next_sound(synth){
             if (sound_to_play[sound_num] != '' ) {
-                synth.triggerAttackRelease(sound_to_play[sound_num], 0.5)
+                synth.triggerAttackRelease(sound_to_play[sound_num], 0.63)
                 console.log(synth._buffers.baseUrl, sound_to_play[sound_num], sound_num)
             }
             sound_num += 1
