@@ -8,25 +8,238 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
 
+    <script src="camvas.js"></script>
+    <script src="pico.js"></script>
+    <script src="lploc.js"></script>
+
+
     <!-- Styling -->
     <link rel="stylesheet" href="nprogress.css" type="text/css" />
     <!-- Document Title
 	============================================= -->
-    <title>ToneJS-Instruments Demo</title>
+    <a>ceno</a>
+    <hr>
+        <section>
+            <h3>Developed by itamar, based on lploc.js & tone.js</h3>
+            <p>Click the button below and allow the page to access your webcam.</p>
+            <p><b>All the processing is done on the client side, i.e., without sending images to a server.</b></p>
+            <p>To add buttons for: toggle camera, make night mode, song chooser, sensitivity bar, pace</p>
+        </section>
+    <span>Selected instruments: </span><span id="instruments_list"></span>
+
+    <span><h1 id="spanOne"></h1></span>
+    <span><h1 id="spanTwo"></h1></span>
+    <span><h1 id="spanThree"></h1></span>
+    <span><h1 id="spanFour"></h1></span>
+
+    <hr>
+        <p></p><center><input type="button" value="Start webcam feed" onclick="button_callback()" id="startButton" style="display:none;"></center><p></p>
+        <p></p><center><canvas width="640" height="480" style="display:none;"></canvas></center><p></p>
+
+        <script>
+        let avgx = 0;
+        let avgy = 0;
+
+        var initialized = false;
+        function button_callback() {
+            /*
+                (0) check whether we're already running face detection
+            */
+            if(initialized)
+                return; // if yes, then do not initialize everything again
+            /*
+                (1) initialize the pico.js face detector
+            */
+            var update_memory = pico.instantiate_detection_memory(5); // we will use the detecions of the last 5 frames
+
+            var facefinder_classify_region = function(r, c, s, pixels, ldim) {return -1.0;};
+            var cascadeurl = 'https://raw.githubusercontent.com/nenadmarkus/pico/c2e81f9d23cc11d1a612fd21e4f9de0921a5d0d9/rnt/cascades/facefinder';
+            fetch(cascadeurl).then(function(response) {
+                response.arrayBuffer().then(function(buffer) {
+                    var bytes = new Int8Array(buffer);
+                    facefinder_classify_region = pico.unpack_cascade(bytes);
+                    console.log('* facefinder loaded');
+                })
+            })
+            /*
+                (2) initialize the lploc.js library with a pupil localizer
+            */
+            var do_puploc = function(r, c, s, nperturbs, pixels, nrows, ncols, ldim) {return [-1.0, -1.0];};
+            var puplocurl = 'https://drone.nenadmarkus.com/data/blog-stuff/puploc.bin';
+            fetch(puplocurl).then(function(response) {
+                response.arrayBuffer().then(function(buffer) {
+                    var bytes = new Int8Array(buffer);
+                    do_puploc = lploc.unpack_localizer(bytes);
+                    console.log('* puploc loaded');
+                })
+            })
+            /*
+                (3) get the drawing context on the canvas and define a function to transform an RGBA image to grayscale
+            */
+            var ctx = document.getElementsByTagName('canvas')[0].getContext('2d');
+            function rgba_to_grayscale(rgba, nrows, ncols) {
+                var gray = new Uint8Array(nrows*ncols);
+                for(var r=0; r<nrows; ++r)
+                    for(var c=0; c<ncols; ++c)
+                        // gray = 0.2*red + 0.7*green + 0.1*blue
+                        gray[r*ncols + c] = (2*rgba[r*4*ncols+4*c+0]+7*rgba[r*4*ncols+4*c+1]+1*rgba[r*4*ncols+4*c+2])/10;
+                return gray;
+            }
+            /*
+                (4) this function is called each time a video frame becomes available
+            */
+            var processfn = function(video, dt) {
+                // render the video frame to the canvas element and extract RGBA pixel data
+                ctx.drawImage(video, 0, 0);
+                var rgba = ctx.getImageData(0, 0, 640, 480).data;
+                // prepare input to `run_cascade`
+                image = {
+                    "pixels": rgba_to_grayscale(rgba, 480, 640),
+                    "nrows": 480,
+                    "ncols": 640,
+                    "ldim": 640
+                }
+                params = {
+                    "shiftfactor": 0.1, // move the detection window by 10% of its size
+                    "minsize": 100,     // minimum size of a face
+                    "maxsize": 1000,    // maximum size of a face
+                    "scalefactor": 1.1  // for multiscale processing: resize the detection window by 10% when moving to the higher scale
+                }
+                // run the cascade over the frame and cluster the obtained detections
+                // dets is an array that contains (r, c, s, q) quadruplets
+                // (representing row, column, scale and detection score)
+                dets = pico.run_cascade(image, facefinder_classify_region, params);
+                dets = update_memory(dets);
+                dets = pico.cluster_detections(dets, 0.2); // set IoU threshold to 0.2
+                // console.log(avgy,avgx)
+                // draw detections
+                for(i=0; i<dets.length; ++i)
+                    // check the detection score
+                    // if it's above the threshold, draw it
+                    // (the constant 50.0 is empirical: other cascades might require a different one)
+                    if(dets[i][3]>50.0)
+                    {
+                        var r, c, s;
+                        avgy = (dets[i][0] + avgy) / 2
+                        avgx = (dets[i][1] + avgx) / 2
+                        // Draw face, x = dets[i][1], y = dets[i][0], r = dets[i][2]/2
+                        ctx.beginPath();
+                        ctx.arc(avgx, avgy, 200 , 0, 2*Math.PI, false);
+                        ctx.lineWidth = 3;
+                        ctx.fillStyle = 'black';
+                        ctx.fill();
+                        //
+                        // find the eye pupils for each detected face
+                        // starting regions for localization are initialized based on the face bounding box
+                        // (parameters are set empirically)
+                        // first eye
+
+                        r = dets[i][0] - 0.075*dets[i][2];
+                        c = dets[i][1] - 0.175*dets[i][2];
+                        let f_r = r
+                        let f_c = c
+                        s = 0.35*dets[i][2];
+                        [r, c] = do_puploc(r, c, s, 63, image)
+                        if(r>=0 && c>=0)
+                        {
+                            // ctx.beginPath();
+                            // ctx.arc(c, r, 1, 0, 2*Math.PI, false);
+                            // ctx.lineWidth = 3;
+                            // ctx.strokeStyle = 'green';
+                            // ctx.stroke();
+                        }
+                        // second eye
+                        r = dets[i][0] - 0.075*dets[i][2];
+                        c = dets[i][1] + 0.175*dets[i][2];
+                        s = 0.35*dets[i][2];
+                        [r, c] = do_puploc(r, c, s, 63, image)
+                        if(r>=0 && c>=0)
+                        {
+                            // ctx.beginPath();
+                            // ctx.arc(c, r, 1, 0, 2*Math.PI, false);
+                            // ctx.lineWidth = 3;
+                            // ctx.strokeStyle = 'red';
+                            // ctx.stroke();
+                        }
+                        ctx.beginPath();
+                        ctx.moveTo(f_c,f_r);
+                        ctx.lineTo(c,r);
+                        ctx.lineTo(avgx, avgy);
+                        ctx.fillStyle = 'white'
+                        ctx.fill();
+                        document.getElementsByTagName("canvas")[0].style.display = "inherit"
+                        document.getElementsByTagName("canvas")[0].style.backgroundColor = 'rgba(158, 167, 184, 0.2)';
+                        
+                    let playThresh = 8;
+                    let timeThresh = 500;
+                    // maybe should be dets[i][0] - avgy*2/(dets[i][0]-avgy)
+                    if(Math.pow(dets[i][0] - avgy,2) > 1){
+                        console.log(Math.pow(dets[i][0] - avgy,2))
+                    }
+                    if(Math.pow(dets[i][1] - avgx,2) > 1){
+                        console.log(Math.pow(dets[i][1] - avgx,2))
+                    }
+                    if(Math.pow(dets[i][0] - avgy,2) > playThresh*0.5 ){
+                        console.log(Math.pow(dets[i][0] - avgy,2))
+                      //up x = dets[i][1], y = dets[i][0] 
+                        if(dets[i][0] > avgy){ 
+                            if (Date.now()-prev_play > timeThresh){
+                                play_next_sound(synth_0)
+                                instrument_display.innerHTML = "🖠 ~ " + chooseFour[0];
+                            }
+                        }
+                        //down
+                        if(dets[i][0] < avgy){
+                            if (Date.now()-prev_play > timeThresh){
+                                play_next_sound(synth_1)
+                                instrument_display.innerHTML = "🖡 ~ " + chooseFour[1]
+                            }
+                        }
+                    } else if (Math.pow(dets[i][1] - avgx,2) > playThresh) {
+                        console.log(Math.pow(dets[i][1] - avgx,2))
+                    //left
+                        if(dets[i][1] < avgx){
+                            if (Date.now()-prev_play > timeThresh){
+                                play_next_sound(synth_2)
+                                instrument_display.innerHTML = "🖚 ~ " + chooseFour[2]
+                            }
+                        }
+                        //right
+                        if(dets[i][1] > avgx){
+                            if (Date.now()-prev_play > timeThresh){
+                                play_next_sound(synth_3)
+                                instrument_display.innerHTML = "🖛 ~ " + chooseFour[3]
+                            }
+                        }
+                    }
+                }
+            }
+            /*
+                (5) instantiate camera handling (see https://github.com/cbrandolino/camvas)
+            */
+            var mycamvas = new camvas(ctx, processfn);
+            /*
+                (6) it seems that everything went well
+            */
+            initialized = true;
+        }
+    </script>
 
 </head>
 
 <body>
     <style type="text/css">
+    html, body {margin: 0; height: 100%; overflow: hidden}
         body {
             height: 100vh;
             width: 100vw;
             font-family: Helvetica, arial;
             font-size: 16px;
+            text-align: center;
         }
 
         #content {
-            height: 100%;
+        /*    height: 100%;*/
             width: 100%;
             display: flex;
             align-items: center;
@@ -45,18 +258,21 @@
     <div id="content">
         <H3 id="loading">Loading...</H3>
         <div class="container">
-            <h1> Tone.js-Instruments</h1>
-            <p> Loads four random instruments from the list. Refresh for different instruments.</p>
-            <div id="Selector"></div>
+            <h1 id="instrument_display"></h1>
+            <h1> CLICK BOX</h1>
+            <h1> MOVE HEAD</h1>
+            <h1> VOLUME ON</h1>
+   <!--          <p> Loads four random instruments from the list. Refresh for different instruments.</p>
+    --><!--          <div id="Selector"></div>
             <br/>
             <div id="Keyboard"></div>
-        </div>
+     -->    </div>
 
     </div>
-    <script type="text/javascript" src="external-js/nprogress.js"></script>
-    <script type="text/javascript" src="external-js/NexusUI.js"></script>
-    <script type="text/javascript" src="external-js/Tone.js"></script>
-    <script type="text/javascript" src="Tonejs-Instruments.js"></script>
+    <script type="text/javascript" src="http://127.0.0.1:8887/external-js/nprogress.js"></script>
+   <!--  <script type="text/javascript" src="http://127.0.0.1:8887/external-js/NexusUI.js"></script> -->
+    <script type="text/javascript" src="http://127.0.0.1:8887/external-js/Tone.js"></script>
+    <script type="text/javascript" src="http://127.0.0.1:8887/Tonejs-Instruments.js"></script>
 
     <script>
         NProgress.start();
@@ -67,8 +283,14 @@
 
         var samples = SampleLibrary.load({
             instruments: chooseFour,
-            baseUrl: "/tonejs-instruments/samples/"
+            baseUrl: "http://127.0.0.1:8887/samples/"
         })
+        // //console.log(samples)
+        instruments_list.innerHTML = chooseFour;
+        // spanOne.innerHTML = "🖠 ~ " + chooseFour[0] 
+        // spanTwo.innerHTML =  "🖡 ~ " + chooseFour[1]
+        // spanThree.innerHTML = "🖚 ~ " + chooseFour[2]
+        // spanFour.innerHTML = "🖛 ~ " + chooseFour[3]
 
         var current
         // show keyboard on load //
@@ -80,7 +302,9 @@
             // loop through instruments and set release, connect to master output
             for (var property in samples) {
                 if (samples.hasOwnProperty(property)) {
-                    console.log(samples[property])
+                    //console.log(samples[property])
+                    console.log("samples loaded")
+                    startButton.style.display = "initial";
                     samples[property].release = .5;
                     samples[property].toMaster();
                 }
@@ -88,10 +312,17 @@
 
             current = samples[chooseFour[0]];
 
-            select.on('change', function(v) {
-                current = samples[v.value];
-            })
+            // select.on('change', function(v) {
+            //     current = samples[v.value];
+            //     console.log(v.value) 
+            //     c
+            // })
 
+        // loading individual synths
+        synth_0 = samples[chooseFour[0]]
+        synth_1 = samples[chooseFour[1]]
+        synth_2 = samples[chooseFour[2]]
+        synth_3 = samples[chooseFour[3]]
 
         })
         // show error message on loading error //
@@ -103,29 +334,29 @@
 
 
         // create Nexus UI //
-        Nexus.colors.accent = "#f00"
+        // Nexus.colors.accent = "#f00"
 
-        var select = new Nexus.Select('#Selector', {
-            'size': [300, 30],
-            'options': Object.keys(samples)
-        });
+        // var select = new Nexus.Select('#Selector', {
+        //     'size': [300, 30],
+        //     'options': Object.keys(samples)
+        // });
 
-        var keyboardUI = new Nexus.Piano('#Keyboard', {
-            'size': [1000, 125],
-            'mode': 'button', // 'button', 'toggle', or 'impulse'
-            'lowNote': 36,
-            'highNote': 72
-        })
+        // var keyboardUI = new Nexus.Piano('#Keyboard', {
+        //     'size': [1000, 125],
+        //     'mode': 'button', // 'button', 'toggle', or 'impulse'
+        //     'lowNote': 36,
+        //     'highNote': 72
+        // })
 
 
-        keyboardUI.on('change', function(note) {
-            console.log(Tone.Frequency(note.note, "midi").toNote());
-            if (note.state === true) {
-                current.triggerAttack(Tone.Frequency(note.note, "midi").toNote());
-            } else if (note.state === false) {
-                current.triggerRelease(Tone.Frequency(note.note, "midi").toNote());
-            }
-        })
+        // keyboardUI.on('change', function(note) {
+        //     console.log(Tone.Frequency(note.note, "midi").toNote());
+        //     if (note.state === true) {
+        //         current.triggerAttack(Tone.Frequency(note.note, "midi").toNote());
+        //     } else if (note.state === false) {
+        //         current.triggerRelease(Tone.Frequency(note.note, "midi").toNote());
+        //     }
+        // })
 
         // Shuffle function //
         function shuffle(a) {
@@ -137,7 +368,67 @@
                 a[j] = x;
             }
         }
+        // global var for time and note count
+        let sound_num = 0
+        let prev_play = Date.now()
+        // never gonna give you up https://noobnotes.net/never-gonna-give-rick-astley/
+        // todo - build scraper for noobnotes. use space as delimter, no consecutives. use 4 as normal, ^before is 5,. is 3, # as C#4, drop *, -, remove new lines 
+        // let sound_to_play = ['A4','B4','D5','B4','F5','F5','E5','A4','B4','D5','B4','E5','E5','D5','C5','B4','A4','B4','D5','B4','D5','E5','C4','A4','A4','E5','D5','A4','B4','D5','B4','F5','F5','E5','A4','B4','D5','B4','A5','C5','D5','C5','B4','A4','B4','D5','B4','D5','E5','C4','A4','A4','E5','D5']
 
+        // //sounds of music
+        let sound_to_play=['C4','D4','E4','C4','E4','C4','E4','D4','E4','F4','F4','E4','D4','F4','E4','F4','G4','E4','G4','E4','G4','F4','G4','A4','A4','G4','F4','A4','G4','C4','D4','E4','F4','G4','A4','A4','D4','E4','F4','G4','A4','B4','B4','E4','F4','G4','A4','B4','C4','C4','B4','A4','F4','B4','G4','C4','G4','E4','D4']
+        // play next sound out of list, if less than 1/3 second ago
+        function play_next_sound(synth){
+            if (sound_to_play[sound_num] != '' ) {
+                synth.triggerAttackRelease(sound_to_play[sound_num], 0.5)
+                console.log(synth._buffers.baseUrl, sound_to_play[sound_num], sound_num)
+            }
+            sound_num += 1
+            prev_play = Date.now()
+            if (sound_num === sound_to_play.length) {
+                sound_num = 0
+            }
+            
+        }
+
+        // randomly choose an instrument to play
+        function choose_instrument(){
+            let list = [synth_0,synth_1,synth_2,synth_3]
+            return list[Math.floor(Math.random() * 4)]
+        }
+
+        // play a note on space key, make sure 1/3 second pass
+        document.body.onkeyup = function(e){
+        if(e.keyCode == 32){
+            if (Date.now()-prev_play > 333){
+                play_next_sound(choose_instrument())
+            }
+        }
+        //up
+        if(e.keyCode == 38){ 
+            if (Date.now()-prev_play > 333){
+                play_next_sound(synth_0)
+            }
+        }
+        //down
+        if(e.keyCode == 40){
+            if (Date.now()-prev_play > 333){
+                play_next_sound(synth_1)
+            }
+        }
+        //left
+        if(e.keyCode == 37){
+            if (Date.now()-prev_play > 333){
+                play_next_sound(synth_2)
+            }
+        }
+        //right
+        if(e.keyCode == 39){
+            if (Date.now()-prev_play > 333){
+                play_next_sound(synth_3)
+            }
+        }
+    }
     </script>
 
 </body>
