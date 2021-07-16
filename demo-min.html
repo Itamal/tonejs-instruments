@@ -199,14 +199,15 @@
                     let timeThresh = 500;
                     // maybe should be dets[i][0] - avgy*2/(dets[i][0]-avgy)
                     if(Math.pow(dets[i][0] - avgy,2) > 1){
-                        console.log(Math.pow(dets[i][0] - avgy,2))
+                        //console.log(Math.pow(dets[i][0] - avgy,2))
                     }
                     if(Math.pow(dets[i][1] - avgx,2) > 1){
-                        console.log(Math.pow(dets[i][1] - avgx,2))
+                        //console.log(Math.pow(dets[i][1] - avgx,2))
                     }
                     if(Math.pow(dets[i][0] - avgy,2) > playThresh*0.5 ){
-                        console.log(Math.pow(dets[i][0] - avgy,2))
+                        //console.log(Math.pow(dets[i][0] - avgy,2))
                       //up x = dets[i][1], y = dets[i][0] 
+                        // console.log(Date.now()-prev_play);
                         if(dets[i][0] > avgy){ 
                             if (Date.now()-prev_play > timeThresh){
                                 play_next_sound(synth_0)
@@ -221,7 +222,7 @@
                             }
                         }
                     } else if (Math.pow(dets[i][1] - avgx,2) > playThresh) {
-                        console.log(Math.pow(dets[i][1] - avgx,2))
+                        //console.log(Math.pow(dets[i][1] - avgx,2))
                     //left
                         if(dets[i][1] < avgx){
                             if (Date.now()-prev_play > timeThresh){
@@ -317,7 +318,17 @@
     <script>
         NProgress.start();
         // load samples / choose 4 random instruments from the list //
-        chooseFour = ['piano', 'bass-electric', 'bassoon', 'cello', 'clarinet', 'contrabass', 'flute', 'french-horn', 'guitar-acoustic', 'guitar-electric','guitar-nylon', 'harmonium', 'harp', 'organ', 'saxophone', 'trombone', 'trumpet', 'tuba', 'violin', 'xylophone']
+        pairs = [
+        [['trombone', 'flute', 'bassoon', 'clarinet','contrabass','tuba', 'french-horn', 'trumpet'],'🎺'],
+        [['guitar-electric','piano','bass-electric', 'harp'],'🎻'],
+        [['guitar-nylon','xylophone','guitar-acoustic', 'piano'],'🎹'],
+        [['organ','harmonium','violin', 'saxophone'],'🎷']
+        ]
+        chosen = pairs[Math.floor(Math.random()*pairs.length)]
+        chooseFour = chosen[0]
+        // chooseFour = ['piano', 'bass-electric', 'bassoon', 'cello', 'clarinet', 'contrabass', 'flute', 'french-horn', 'guitar-acoustic', 'guitar-electric','guitar-nylon', 'harmonium', 'harp', 'organ', 'saxophone', 'trombone', 'trumpet', 'tuba', 'violin', 'xylophone']
+
+
         emojis = ['🎹','🎸','basoon','🎻','clarinet','🎻','flute','french-horn','🎸','🎸','🎸','harmonium','harp','🎹','🎷','🎺','🎺','🎺','🎻','🎹']
         shuffle(chooseFour);
         chooseFour = chooseFour.slice(0, 4);
@@ -327,7 +338,7 @@
             baseUrl: "http://127.0.0.1:8887/samples/"
         })
         // //console.log(samples)
-        instruments_list.innerHTML = chooseFour;
+        instruments_list.innerHTML = chosen[1];
         // spanOne.innerHTML = "🖠 ~ " + chooseFour[0] 
         // spanTwo.innerHTML =  "🖡 ~ " + chooseFour[1]
         // spanThree.innerHTML = "🖚 ~ " + chooseFour[2]
@@ -414,7 +425,7 @@
 
         // //sounds of music
         // let sound_to_play=['C4','D4','E4','C4','E4','C4','E4','D4','E4','F4','F4','E4','D4','F4','E4','F4','G4','E4','G4','E4','G4','F4','G4','A4','A4','G4','F4','A4','G4','C4','D4','E4','F4','G4','A4','A4','D4','E4','F4','G4','A4','B4','B4','E4','F4','G4','A4','B4','C4','C4','B4','A4','F4','B4','G4','C4','G4','E4','D4']
-        let songs = [['a-whole-new-world-aladdin', 'B4', 'A4', 'C5', 'B4', 'G4', 'D4', 'B4', 'A4', 'C5', 'B4', 'G4', 'B4', 'A4', 'A4', 'G4', 'B4', 'A4', 'F#4', 'A4', 'G4', 'F#4', 'G4', 'E4', 'F#4', 'A4', 'G4', 'D4', 'B4', 'A4', 'C5', 'B4', 'G4', 'D4', 'B4', 'A4', 'C5', 'B4', 'G4', 'B4', 'A4', 'A4', 'G4', 'B4', 'A4', 'F#4', 'A4', 'G4', 'F#4', 'G4', 'E4', 'F#4', 'A4', 'G4', 'B4', 'B4', 'C5', 'E5', 'D5', 'B4', 'C5', 'E5', 'D5', 'A4', 'C5', 'B4', 'B4', 'B4', 'C5', 'D5', 'F#5', 'E5', 'D5', 'B4', 'F#5', 'G5', 'D5', 'G4', 'B4', 'A4', 'G4', 'F#4', 'G4', 'A4', 'B4', 'C5', 'E5', 'D5', 'B4', 'C5', 'E5', 'D5', 'A4', 'C5', 'B4', 'B4', 'B4', 'C5', 'D5', 'F#5', 'E5', 'D5', 'B4', 'F#5', 'G5', 'D5', 'G4', 'B4', 'A4', 'G4', 'A4', 'B4', 'A4', 'G4', 'F#4', 'F#4', 'G4', 'B4', 'A4', 'G4', 'A4', 'B4', 'A4', 'G4', 'F#4', 'F#4', 'G4'], ['let-it-go-frozen-disney', 'D4', 'E4', 'E4', 'E4', 'E4', 'E4', 'E4', 'D4', 'C4', 'C4', 'C4', 'C4', 'D4', 'D4', 'C4', 'B3', 'A3', 'A3', 'E4', 'E4', 'E4', 'E4', 'G4', 'G4', 'E4', 'C4', 'C4', 'D4', 'E4', 'D4', 'C4', 'D4', 'E4', 'E4', 'G4', 'A4', 'G4', 'E4', 'G4', 'G4', 'G4', 'F4', 'E4', 'F4', 'E4', 'E4', 'E4', 'D4', 'C4', 'D4', 'D4', 'E4', 'D4', 'C4', 'A3', 'D4', 'D4', 'G4', 'G4', 'D4', 'D4', 'A4', 'A4', 'A4', 'G4', 'A4', 'A4', 'G4', 'A4', 'B4', 'C5', 'B4', 'B4', 'D4', 'D4', 'G4', 'G4', 'D4', 'D4', 'A4', 'A4', 'G4', 'A4', 'B4', 'C5', 'A4', 'B4', 'C5', 'G4', 'G4', 'D5', 'C5', 'A4', 'A4', 'A4', 'A4', 'B4', 'C5', 'A4', 'B4', 'C5', 'G4', 'E5', 'E5', 'D5', 'C5', 'D5', 'E5', 'E5', 'F5', 'E5', 'D5', 'C5', 'D5', 'C5', 'G5', 'E5', 'D5', 'C5', 'C5', 'G5', 'E5', 'C5', 'C5', 'C5', 'B4', 'G4', 'G4', 'F4', 'F4', 'F4', 'E4', 'F4', 'E4', 'F4', 'F4', 'E4', 'C4', 'C4', 'E4', 'E4', 'E4', 'E4', 'E4', 'C4', 'C4', 'G4', 'G4', 'F4', 'E4', 'D4', 'C4', 'C4', 'E4', 'E4', 'E4', 'G4', 'A4', 'G4', 'G4', 'C5', 'C5', 'B4', 'A4', 'A4', 'D4', 'D4', 'G4', 'G4', 'D4', 'D4', 'G4', 'A4', 'G4', 'A4', 'G4', 'A4', 'B4', 'C5', 'D5', 'G4', 'D4', 'D4', 'G4', 'G4', 'D4', 'G4', 'D4', 'A4', 'B4', 'C5', 'A4', 'B4', 'C5', 'G4', 'D5', 'D5', 'C5', 'A4', 'A4', 'A4', 'A4', 'A4', 'B4', 'C5', 'A4', 'B4', 'C5', 'G4', 'E5', 'E5', 'D5', 'D5', 'E5', 'E5', 'F5', 'D5', 'D5', 'C5', 'G5', 'E5', 'D5', 'C5', 'G5', 'E5', 'C5', 'C5', 'C5', 'B4', 'G4', 'G4', 'F4', 'F4', 'F4', 'E4', 'F4', 'E4', 'F4', 'F4', 'E4', 'C4', 'F4', 'E4', 'F4', 'G4', 'A4', 'Bb4', 'C5', 'D#5', 'D5', 'C5', 'Bb4', 'C5', 'F4', 'E4', 'F4', 'G4', 'A4', 'Bb4', 'C5', 'D#5', 'D4', 'C5', 'Bb4', 'D#5', 'D5', 'C5', 'D5', 'C5', 'G4', 'F#4', 'G4', 'A4', 'B4', 'C5', 'D5', 'F5', 'E5', 'D5', 'C5', 'D5', 'E5', 'E5', 'E4', 'E5', 'C5', 'C5', 'C5', 'D5', 'C5', 'C5', 'E5', 'F5', 'F5', 'F5', 'F5', 'E5', 'G4', 'G4', 'D5', 'C5', 'A4', 'A4', 'A4', 'A4', 'A4', 'B4', 'C5', 'D5', 'A4', 'B4', 'C5', 'G4', 'E5', 'E5', 'D5', 'C5', 'E5', 'E4', 'F5', 'E5', 'D5', 'C5', 'G5', 'E5', 'D5', 'C5', 'C5', 'G5', 'E5', 'F5', 'E5', 'D5', 'C5', 'C5', 'C5', 'B4', 'C5', 'G5', 'D#4', 'F4', 'F4', 'E4', 'F4', 'E4', 'F4', 'F4', 'E4', 'C4'], ['close-to-you-carpenters', 'A3', 'C4', 'G4', 'G4', 'F4', 'G4', 'A4', 'E4', 'E4', 'G4', 'B4', 'E4', 'G4', 'C5', 'A3', 'C4', 'G4', 'A3', 'C4', 'A4', 'G4', 'A3', 'C4', 'G4', 'A3', 'C4', 'G4', 'G4', 'F4', 'G4', 'A4', 'E4', 'E4', 'G4', 'B4', 'E4', 'G4', 'C5', 'A3', 'C4', 'G4', 'A3', 'C4', 'A4', 'G4', 'A3', 'C4', 'G4', 'C4', 'C4', 'D4', 'D4', 'E4', 'E4', 'D4', 'D4', 'C4', 'C4', 'D4', 'D4', 'E4', 'E4', 'D4', 'C4', 'G4', 'G4', 'A4', 'A4', 'B4', 'B4', 'A4', 'G4', 'B4', 'A4', 'B4', 'C5', 'C5', 'C5', 'C5', 'C5', 'C5', 'C5', 'C5', 'C5', 'C5', 'C5', 'C5', 'C5', 'A4', 'B4', 'C5', 'D5', 'A3', 'C4', 'G4', 'G4', 'F4', 'G4', 'A4', 'E4', 'E4', 'G4', 'B4', 'E4', 'G4', 'C5', 'A3', 'C4', 'G4', 'A3', 'C4', 'A4', 'G4', 'A3', 'C4', 'G4', 'C5', 'B4', 'C5', 'B4', 'A4', 'B4', 'G4', 'G4', 'E4'], ['youve-got-friend-toy-story-disney', 'E4', 'G4', 'E4', 'A4', 'G4', 'E4', 'A4', 'C5', 'A4', 'C5', 'A4', 'G4', 'A4', 'F4', 'G4', 'C4', 'B4', 'B4', 'C5', 'A4', 'G4', 'C5', 'A4', 'G4', 'A4', 'E4', 'C4', 'E4', 'E4', 'E4', 'A4', 'B4', 'D5', 'C4', 'G4', 'E4', 'C4', 'D#4', 'E4', 'C5', 'A4', 'C5', 'A4', 'G4', 'E4', 'C4', 'E4', 'C5', 'C5', 'A4', 'G4', 'C5', 'A4', 'A4']]
+        let songs = [['a-whole-new-world-aladdin', 'B4', 'A4', 'C5', 'B4', 'G4', 'D4', 'B4', '-', 'A4', 'C5', '-', 'B4', '-', 'G4', 'B4', '-', 'A4', 'A4', 'G4', 'B4', '-', 'A4', 'F#4', 'A4', 'G4', 'F#4', 'G4', 'E4', 'F#4', 'A4', 'G4', '-', 'D4', 'B4', 'A4', 'C5', '-', 'B4', 'G4', 'D4', 'B4', 'A4', 'C5', '-', 'B4', 'G4', 'B4', '-', 'A4', 'A4', '-', 'G4', 'B4', '-', 'A4', 'F#4', 'A4', '-', 'G4', 'F#4', 'G4', 'E4', '-', 'F#4', 'A4', '-', 'G4', 'B4', 'B4', 'C5', 'E5', 'D5', 'B4', 'C5', 'E5', '-', 'D5', '-', 'A4', 'C5', 'B4', 'B4', 'B4', '-', 'C5', 'D5', 'F#5', 'E5', 'D5', 'B4', 'F#5', 'G5', 'D5', 'G4', 'B4', 'A4', 'G4', '-', 'F#4', 'G4', '-', 'A4', 'B4', 'C5', 'E5', 'D5', 'B4', 'C5', '-', 'E5', 'D5', 'A4', 'C5', '-', 'B4', 'B4', 'B4', 'C5', 'D5', 'F#5', 'E5', 'D5', 'B4', 'F#5', '-', 'G5', 'D5', 'G4', 'B4', 'A4', 'G4', 'A4', 'B4', 'A4', 'G4', '-', 'F#4', 'F#4', 'G4', 'B4', 'A4', 'G4', 'A4', 'B4', 'A4', 'G4', '-', 'F#4', 'F#4', 'G4'], ['tale-as-old-as-time-beauty-beast-disney', 'G3', 'Bb3', 'D4', 'D#4', 'G#3', 'G3', 'Bb3', 'D4', 'D#4', 'F4', 'D#4', '-', 'F4', 'G4', '-', 'G#4', 'Bb4', 'Bb4', 'G#4', '-', 'G4', '-', 'F4', 'D#4', 'G#4', '-', 'G4', '-', 'F4', '-', 'D#4', '-', 'Bb3', 'G3', 'Bb3', 'D4', '-', 'D#4', 'G#4', 'G3', 'Bb3', 'D4', 'D#4', 'F4', 'G4', 'F4', 'G4', '-', 'Bb4', 'D#4', 'D#4', '-', 'D4', 'D#4', 'G4', '-', 'C4', 'G4', '-', 'G#4', 'F4', 'G4', 'D#4', 'D#4', '-', 'F4', 'G4', 'G#4', 'Bb4', 'D#4', '-', 'F4', 'G4', 'C5', '-', 'Bb4', 'D#4', '-', 'F4', 'G4', 'G#4', '-', 'Bb4', 'Bb4', '-', 'G#4', 'G4', 'F4', 'D#4', 'D#4', 'F4', 'G4', 'D#4', 'F4', 'A3', 'C4', 'E4', 'F4', 'Bb3', 'A3', 'C4', 'E4', 'F4', 'G4', 'F4', '-', 'G4', '-', 'A4', 'Bb4', 'C5', 'C5', '-', 'Bb4', 'A4', 'G4', 'F4', 'Bb4', '-', 'A4', 'G4', 'F4', 'C4', 'A3', '-', 'C4', 'E4', 'F4', 'Bb3', 'A3', '-', 'C4', 'E4', 'F4', 'G4', 'A4', 'G4', 'A4', 'C5', 'F4', 'F4', 'E4', 'F4', 'A4', 'D4', 'A4', '-', 'Bb4', 'G4', 'A4', 'F4'], ['colors-wind-pocahontas-disney', 'C4', 'G4', 'Bb4', 'Bb4', 'G4', '-', 'G4', '-', 'F4', 'F4', 'D#4', 'F4', 'C4', 'C4', 'G4', 'Bb4', 'Bb4', 'G4', 'G4', 'F4', 'F4', 'D#4', 'G4', 'Bb4', 'C5', 'Bb4', 'Bb4', '-', 'G4', 'G4', 'F4', 'F4', 'D#4', 'F4', '-', 'C4', 'F4', 'G4', 'F4', 'D#4', 'F4', 'G4', '-', 'Bb4', 'F4', 'G4', 'C4', 'C4', 'G4', 'Bb4', 'Bb4', '-', 'G4', 'G4', '-', 'F4', 'F4', 'D#4', 'F4', '-', 'C4', 'C4', 'C4', 'G4', '-', 'Bb4', 'G4', 'G4', 'F4', 'F4', 'D#4', 'Bb4', 'Bb4', 'C5', 'Bb4', 'Bb4', 'G4', 'G4', '-', 'F4', 'F4', 'D#4', 'F4', '-', 'C4', 'F4', 'G4', 'F4', 'D#4', 'F4', '-', 'G4', 'F4', 'D#4', 'C4', '-', 'D#4', 'D#4', 'G4', 'Bb4', 'D#5', '-', 'D5', 'D5', 'C5', 'C5', 'Bb4', 'Bb4', 'G4', 'G4', 'Bb4', 'C5', 'C5', 'D#5', 'D5', 'D5', '-', 'C5', 'C5', '-', 'Bb4', 'Bb4', 'G4', 'Bb4', 'G4', 'Bb4', 'D#5', 'D5', 'D5', 'C5', 'C5', '-', 'Bb4', 'Bb4', 'C5', 'Bb4', '-', 'D#4', 'C4', 'D#4', 'F4', 'G4', 'G4', 'F4', 'F4', '-', 'D#4', 'D#4', 'C4', 'F4', 'C4', 'D#4', 'F4', 'G4', 'G4', 'F4', 'F4', '-', 'D#4', 'D#4', 'C4', 'D#4', 'C4', 'G4', 'Bb4', 'Bb4', '-', 'G4', 'G4', 'F4', 'F4', 'D#4', 'F4', '-', 'C4', 'C4', 'G4', 'Bb4', 'Bb4', '-', 'G4', 'G4', '-', 'F4', 'F4', 'D#4', 'Bb4', 'Bb4', 'C5', 'Bb4', 'Bb4', 'G4', 'G4', '-', 'F4', 'F4', 'D#4', '-', 'F4', 'C4', 'F4', 'G4', 'F4', 'D#4', '-', 'F4', 'G4', '-', 'Bb4', 'F4', 'G4', 'C4', 'G4', 'D5', 'C5', 'Bb4', 'C5', '-', 'Bb4', '-', 'G4', 'D#4', 'C4', 'D#4', 'F4', 'G4', 'F4', 'C4', 'D#4', 'G4', '-', 'F4', 'F4', 'G4', 'Bb4', 'D#5', '-', 'D5', 'D5', 'C5', 'C5', 'Bb4', 'Bb4', 'G4', 'G4', 'Bb4', 'C5', 'C5', 'D#5', '-', 'D5', 'D5', 'C5', 'C5', 'Bb4', 'Bb4', '-', 'G4', 'Bb4', 'F4', 'G4', 'Bb4', 'D#5', 'D5', 'D5', 'C5', 'C5', '-', 'Bb4', 'Bb4', 'C5', 'Bb4', '-', 'D#4', 'C4', 'C4', 'D#4', 'F4', 'G4', 'G4', 'F4', 'F4', '-', 'D#4', 'D#4', 'C4', 'D#4', 'C4', 'D#4', 'F4', 'G4', 'G4', 'F4', 'F4', 'D#4', 'F4', 'G4', 'Bb4', 'G4', 'Bb4', '-', 'C5', 'Bb4', 'C5', 'D#5', 'D5', 'C5', 'Bb4', 'G4', '-', 'F4', 'D#4', 'C4', 'D#4'], ['prince-ali-aladdin-disney', 'D5', 'A5', 'D5', 'E5', 'D5', '-', 'A5', 'D5', 'A5', 'D5', 'E5', 'F5', '-', 'D5', 'D4', 'A4', 'A4', 'D4', 'A4', 'A4', 'D4', 'A4', '-', 'Bb4', 'A4', 'A3', 'E4', 'E4', 'A3', 'E4', 'E4', 'A3', 'E4', 'F4', 'E4', 'D4', 'A4', 'A4', 'D4', 'A4', 'A4', 'D4', 'A4', 'Bb4', 'A4', 'G4', 'F4', 'E4', 'B4', 'B4', 'E4', 'B4', 'E4', 'B4', 'B4', 'E4', 'E4', 'A4', 'A4', '-', 'A4', 'B4', 'C5', 'C#5', 'A4', 'A4', '-', 'A5', 'G5', '-', 'A5', '-', 'G5', 'F5', 'E5', '-', 'F5', 'E5', '-', 'D5', '-', 'A4', 'G#4', '-', 'A4', '-', 'D5', 'C5', 'D5', 'C5', '-', 'Bb4', 'A4', 'Bb4', 'A4', 'G4', 'Bb4', 'Bb4', 'Bb4', 'A4', 'Bb4', 'A4', 'F4', 'D5', 'D5', 'D5', 'C5', '-', 'D5', 'C5', '-', 'Bb4', 'F5', 'F5', 'F5', 'E5', 'F5', 'E5', '-', 'F5', '-', 'E5', '-', 'F5', 'D#5', '-', 'E5', '-', 'A5', 'A4', 'A4', '-', 'A5', 'G5', '-', 'A5', 'G5', 'F5', 'E5', '-', 'F5', 'E5', '-', 'D5', '-', 'A4', 'G#4', 'A4', 'D5', 'C5', '-', 'D5', '-', 'C5', 'Bb4', 'A4', '-', 'Bb4', '-', 'A4', '-', 'G4', 'Bb4', 'Bb4', 'Bb4', 'A4', '-', 'Bb4', '-', 'A4', 'F4', 'D5', 'D5', '-', 'D5', 'C5', 'D5', 'C5', 'Bb4', 'F5', 'F5', 'F5', 'E5', 'F5', 'E5', 'A5', 'A4', 'F5', 'C#5', '-', 'D5', 'C#5', 'D5', 'E5', '-', 'F5', '-', 'D#5', '-', 'D5', 'E5', '-', 'F5', 'D5', '-', 'A4', 'C#5', '-', 'D5', 'E5', '-', 'D5', 'C#5', 'D5', 'E5', '-', 'D5', '-', 'F5', 'C#5', 'D5', 'E5', 'D5', 'C#5', '-', 'D5', '-', 'E5', 'F5', 'D5', '-', 'A4', 'D5', 'D5', 'Bb4', 'Bb4', 'Bb4', 'D5', 'Bb4', '-', 'Bb4', 'Bb4', 'D5', 'D5', 'E5', '-', 'E5', 'E5', '-', 'D#5', '-', 'E5', '-', 'A5', 'A4', 'A4', '-', 'Bb5', 'G#5', '-', 'Bb5', 'G#5', 'F#5', 'F5', '-', 'F#5', 'F5', '-', 'D#5', '-', 'Bb4', 'A4', 'Bb4', '-', 'D#5', 'C#5', 'D#5', 'C#5', 'B4', 'Bb4', 'B4', 'Bb4', 'G#4', 'B4', 'B4', 'B4', 'Bb4', 'B4', 'Bb4', 'F#4', 'D#5', '-', 'D#5', 'D#5', 'C#5', 'D#5', 'C#5', '-', 'B4', 'F#5', 'F#5', 'F#5', 'F5', '-', 'F#5', 'F5', 'Bb5', 'Bb4', 'F#5', 'D5', '-', 'D#5', 'D5', 'D#5', 'F5', '-', 'D#5', '-', 'D5', 'D#5', 'F5', '-', 'F#5', 'D#5', '-', 'Bb4', 'D5', 'D#5', 'F5', 'D#5', 'D5', 'D#5', '-', 'F5', 'D#5', 'F#5', 'D5', 'D#5', 'F5', 'D#5', 'D5', 'D#5', '-', 'F5', 'F#5', 'D#5', '-', 'Bb4', 'F#5', 'F5', 'F#5', 'F5', 'D#5', 'D#5', 'B4', 'B4', 'B4', 'D#5', 'B4', '-', 'B4', 'B4', 'D#5', 'D#5', 'F5', '-', 'F5', 'F5', 'E5', '-', 'F5', '-', 'F#5', 'D#5', 'F5', '-', 'A5', 'A4', 'Bb4', '-', 'Bb5', 'Bb4', 'B4', '-', 'B5', 'A5', '-', 'B5', '-', 'A5', 'G5', 'F#5', '-', 'G4', 'F#5', '-', 'E5', '-', 'B4', 'Bb4', 'B4', 'E5', '-', 'D5', 'E5', 'D5', 'C5', 'B4', '-', 'C5', 'B4', 'A4', 'C5', 'C5', 'C5', 'B4', '-', 'C5', 'B4', 'G4', 'E5', 'E5', 'E5', 'D5', 'E5', 'D5', 'C5', 'G5', 'G5', '-', 'G5', 'F#5', '-', 'G5', '-', 'F#5', 'G5', '-', 'G5', 'G5', '-', 'F#4', 'B4', 'B4', 'G5', 'G5', 'F#5', '-', 'G5', 'F#5', 'G5', 'G5', 'G5', 'F#5', 'B4', 'B4', 'E5', '-', 'E5', 'E5', '-', 'F#5', 'G5', 'E5', 'E5', 'E5', '-', 'G5', 'G5', 'E5', 'E5', 'E5', '-', 'F#5', 'G5', 'Bb5', 'G5', 'B5', 'B4', 'C6', 'B5', '-', 'Bb4', '-', 'D#6'], ['under-the-sea-the-little-mermaid-disney', 'C5', 'C5', '-', 'C5', 'C5', 'B4', '-', 'D5', 'C5', '-', 'G4', 'E4', 'G4', '-', 'G4', '-', 'E4', 'D4', '-', 'G4', 'E4', 'C5', 'C5', 'C5', '-', 'C5', 'B4', '-', 'D5', 'C5', 'G4', 'E4', 'G4', 'G4', 'E4', 'D4', 'G4', '-', 'E4', 'A4', 'C5', 'C5', 'A4', 'G4', 'C5', '-', 'G4', 'C5', 'B4', 'D5', 'D5', 'C5', 'E5', '-', 'D5', 'C5', 'A4', 'C5', '-', 'C5', '-', 'A4', 'G4', 'C5', '-', 'G4', 'C5', 'B4', 'D5', 'D5', 'C5', 'E5', '-', 'D5', 'C5', 'E5', '-', 'D5', 'C5', 'A4', 'E5', '-', 'D5', 'C5', 'D5', 'E5', '-', 'D5', 'C5', 'A4', '-', 'G4', 'E5', 'D5', 'C5', 'A4', '-', 'G4', 'E5', 'D5', 'C5', 'E5', 'E5', 'D5', 'C5', 'A4', 'C5', 'C5', 'A4', 'D5', 'D5', 'C5', 'D5', 'E5', 'E5', 'D5', 'D5', '-', 'C5', 'E5', 'D5', 'C5', '-', 'A4', '-', 'G4', 'E5', 'D5', 'C5', 'A4', '-', 'G4', 'E5', '-', 'D5', 'C5', 'C5'], ['circle-life-lion-king-disney', 'D4', 'D#4', 'F4', 'F4', 'F4', '-', 'F4', 'F4', 'G4', 'F4', '-', 'D#4', 'D4', 'D#4', '-', 'D#4', 'D#4', 'D#4', '-', 'G4', 'F4', 'D4', 'F4', 'Bb4', 'A4', 'Bb4', 'G4', 'A4', 'Bb4', '-', 'C5', 'D5', 'C5', 'G4', 'Bb4', 'C5', 'C5', 'D5', 'D#5', '-', 'D5', 'Bb4', 'C5', 'D4', 'F4', 'F4', 'F4', 'F4', 'G4', 'F4', 'D#4', 'C4', 'D4', 'D#4', 'D#4', 'D#4', 'D#4', '-', 'G4', 'F4', 'D4', 'F4', 'F4', 'Bb4', 'Bb4', '-', 'Bb4', 'Bb4', 'G4', 'A4', 'Bb4', '-', 'C5', '-', 'D5', 'C5', 'C5', 'C5', 'C5', 'C5', 'C5', 'D5', 'D#5', '-', 'D5', '-', 'Bb4', 'D5', '-', 'C5', 'F4', 'F4', 'F5', '-', 'D5', 'C5', 'D5', 'D5', 'D5', 'D#5', 'F5', 'F5', '-', 'D#5', 'D5', 'D#5', '-', 'F5', 'D5', 'C5', '-', 'Bb4', 'Bb4', 'D#5', 'D5', 'C5', '-', 'D5', '-', 'F5', 'F5', 'F5', 'F5', 'D5', '-', 'C5', 'D5', 'D5', 'D5', 'D#5', 'F5', '-', 'F5', '-', 'D#5', 'G5', 'G5', 'F5', '-', 'D5', '-', 'C5', '-', 'Bb4', 'Bb4', 'D#5', '-', 'D4', 'C5', 'Bb4', 'F4', 'F4', 'F5', '-', 'D5', 'C5', 'D5', 'D5', 'D5', 'D#5', 'F5', 'F5', '-', 'D#5', 'D5', 'D#5', '-', 'F5', 'D5', 'C5', '-', 'Bb4', 'Bb4', 'D#5', 'F5', 'G5', '-', 'F5', 'F5', 'F5', 'F5', 'G5', 'F5', 'F#5', 'F#5', 'G5', 'A5', '-', 'A5', '-', 'G5', 'Bb5', 'Bb5', 'G#5', '-', 'F5', '-', 'D5', '-', 'C#5', 'C5', 'F#5', '-', 'F5', 'D#5', 'C#5'], ['remember-me-coco-disney', 'A4', '-', 'B4', '-', 'G4', 'D4', 'D4', 'B3', 'C4', 'G4', 'G4', 'A4', '-', 'A4', 'B4', '-', 'B4', '-', 'A4', 'D4', 'B4', 'C5', 'B4', 'B4', 'A4', 'A4', 'F#4', 'G4', '-', 'E5', 'E5', 'D5', 'D5', 'B4', '-', 'B4', 'G4', 'D5', 'C5', 'C5', 'B4', 'B4', 'E4', 'E4', 'D5', 'D5', '-', 'C5', 'C5', 'B4', 'B4', 'G4', 'B4', 'A4', 'A4', 'G4', '-', 'A4', 'G4', '-', 'B4', '-', 'G4', 'D4', 'D4', 'B3', 'C4', 'G4', 'G4', '-', 'A4', 'A4', 'B4', '-', 'B4', '-', 'A4', 'B4', 'B4', 'B4', 'B4', 'D5', 'C5', 'C5', 'B4', '-', 'B4', 'G4', 'G5', 'G5', 'F#5', 'F#5', 'E5', 'E5', '-', 'D5', 'C5', 'B4', 'B4', 'A4', 'D5', 'G4', '-', 'G4', 'B4', 'B4', 'D5', 'D5', 'G5', '-', 'G5', 'G5', '-', 'G5', '-', 'G5', 'G5'], ['when-you-wish-upon-a-star-pinocchio-disney', 'D4', 'D5', 'C5', 'B4', '-', 'G#4', 'A4', 'E5', 'F#4', 'F#5', 'E5', '-', 'D5', 'C#5', 'D5', 'G5', 'A5', '-', 'G5', '-', 'F#5', 'E5', 'D5', 'C5', '-', 'B4', 'A4', 'E5', 'F#4', 'D5', 'D4', 'D5', 'C5', 'B4', 'G#4', 'A4', 'E5', 'F#4', 'F#5', 'E5', 'D5', 'C#5', 'D5', 'B5', 'A5', 'G5', 'F#5', 'E5', '-', 'D5', 'C5', 'B4', 'A4', 'E5', 'F#5', 'G5'], ['the-bare-necessities-the-jungle-book', 'C4', 'D4', 'E4', 'A4', 'G#4', '-', 'A4', '-', 'G4', '-', 'F4', 'F4', 'G4', '-', 'F4', 'G4', 'F4', '-', 'G4', '-', 'F4', '-', 'D4', 'C4', '-', 'F4', 'C4', '-', 'F4', 'A4', 'D5', '-', 'C5', 'Bb4', 'A4', 'G4', 'C5', 'D5', 'C5', 'D5', 'C5', '-', 'D5', '-', 'C5', '-', 'A4', 'F4', 'G4', '-', 'F4', 'G4', '-', 'F4', 'D5', '-', 'F4', '-', 'F4', 'G4', 'A4', 'C5', 'A4', 'C5', '-', 'A4', '-', 'G4', '-', 'F4', 'C4', 'F4', 'F4', '-', 'E4', '-', 'E4', 'D4', 'C4', '-', 'C4', 'G4', '-', 'G4', '-', 'F4', 'E4', 'F4', 'F4', 'E4', '-', 'E4', 'D4', 'C4', '-', 'G4', 'G4', 'F4', 'G4', 'A4', 'A4', 'Bb4', 'C5', 'D5', '-', 'D5', 'D5', 'Bb4', 'A4', 'G4', 'A4', 'Bb4', 'C5', '-', 'D5', 'C5', 'A4', 'G4', 'F4', 'C4', 'D4', 'D4', '-', 'D4', 'D4', 'C4', 'D4', 'D4', 'D4', 'Bb4', 'Bb4', 'Bb4', 'A4', 'A4', 'G4', '-', 'F4', 'E4', 'C4', 'F4', '-', 'F4', 'A4', 'C5', 'D4', 'A4', 'Bb4', 'C5', '-', 'D5', '-', 'D5', '-', 'D5', 'Bb4', 'A4', 'G4', 'F4', 'E4', 'F4', 'E4', 'D4', 'E4', 'F4'], ['close-to-you-carpenters', 'A3', 'C4', 'G4', 'G4', '-', 'F4', '-', 'G4', 'A4', '-', 'E4', 'E4', '-', 'G4', 'B4', 'E4', 'G4', 'C5', 'A3', 'C4', 'G4', 'A3', 'C4', 'A4', 'G4', 'A3', 'C4', 'G4', 'A3', 'C4', 'G4', 'G4', 'F4', 'G4', 'A4', 'E4', 'E4', '-', 'G4', 'B4', 'E4', 'G4', 'C5', 'A3', 'C4', 'G4', 'A3', 'C4', 'A4', 'G4', 'A3', 'C4', 'G4', 'C4', 'C4', 'D4', 'D4', 'E4', 'E4', 'D4', 'D4', 'C4', '-', 'C4', 'D4', 'D4', '-', 'E4', '-', 'E4', 'D4', 'C4', '-', 'G4', '-', 'G4', 'A4', 'A4', '-', 'B4', 'B4', 'A4', 'G4', 'B4', 'A4', 'B4', 'C5', '-', 'C5', 'C5', '-', 'C5', 'C5', 'C5', 'C5', 'C5', 'C5', 'C5', 'C5', '-', 'C5', 'C5', 'A4', 'B4', 'C5', 'D5', 'A3', 'C4', 'G4', 'G4', 'F4', 'G4', 'A4', 'E4', 'E4', '-', 'G4', 'B4', 'E4', 'G4', '-', 'C5', 'A3', 'C4', 'G4', 'A3', 'C4', 'A4', 'G4', 'A3', 'C4', 'G4', 'C5', '-', 'B4', '-', 'C5', '-', 'B4', '-', 'A4', 'B4', 'G4', 'G4', '-', 'E4'], ['youve-got-friend-toy-story-disney', 'E4', 'G4', 'E4', 'A4', 'G4', 'E4', 'A4', 'C5', 'A4', 'C5', 'A4', 'G4', 'A4', 'F4', 'G4', 'C4', 'B4', 'B4', '-', 'C5', 'A4', 'G4', 'C5', '-', 'A4', 'G4', 'A4', 'E4', 'C4', 'E4', 'E4', 'E4', 'A4', 'B4', 'D5', '-', 'C4', '-', 'G4', 'E4', 'C4', 'D#4', 'E4', 'C5', 'A4', 'C5', 'A4', 'G4', 'E4', 'C4', 'E4', 'C5', 'C5', 'A4', 'G4', 'C5', 'A4', 'A4']]
 
         song_to_play = songs[Math.floor(Math.random() *(songs.length))];
         song_display.innerHTML = song_to_play[0];
@@ -422,12 +433,31 @@
 
         // play next sound out of list, if less than 1/3 second ago
         function play_next_sound(synth){
+            let time = 0.63
+            let half_time = 4*time/7
             if (sound_to_play[sound_num] != '' ) {
-                synth.triggerAttackRelease(sound_to_play[sound_num], 0.63)
-                console.log(synth._buffers.baseUrl, sound_to_play[sound_num], sound_num)
+                const now = Tone.now()
+                if (sound_to_play[sound_num] != '-' ) {
+                    console.log(synth._buffers.baseUrl, sound_to_play[sound_num], sound_num)
+                    synth.triggerAttackRelease(sound_to_play[sound_num], time)
+                    prev_play = Date.now()
+                }
+                if (sound_to_play[sound_num+1] === '-') {
+                    console.log('dbl')
+                    sound_num += 2
+                    synth.triggerAttackRelease(sound_to_play[sound_num], time, now + half_time)    
+                    console.log(synth._buffers.baseUrl, sound_to_play[sound_num], sound_num)
+                    rev_play = Date.now() + time*1500
+                } 
+                if (sound_to_play[sound_num+1] === '-') {
+                    console.log('triple')
+                    sound_num += 2
+                    console.log(synth._buffers.baseUrl, sound_to_play[sound_num], sound_num)
+                    synth.triggerAttackRelease(sound_to_play[sound_num], time, now + half_time)
+                    prev_play = Date.now() + time*3000
+                }
             }
             sound_num += 1
-            prev_play = Date.now()
             if (sound_num === sound_to_play.length) {
                 sound_num = 0
             }
@@ -477,3 +507,15 @@
 </body>
 
 </html>
+
+<!-- TODO!
+1. cenofy design
+2. enable back camera as default on phone (or choose)
+3. Develop settings pop down
+    Pace - bar
+    Sensitivity - bar
+    Instruments - emoji button
+    Choose song - ?
+    About game - text
+4. make fulle song list and test for quality
+ -->
