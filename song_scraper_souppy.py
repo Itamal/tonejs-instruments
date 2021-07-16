@@ -148,12 +148,12 @@ def get_and_translate(url):
     
     name = re.split('/', url)
     name = name[len(name)-2]
-    final_res = [name]
+    final_res = [name.replace("-"," ")]
     for i in range(0,len(result)):
         if result[i] in dictionary:
             final_res.append(dictionary[result[i]])
         else:
-            print('oh no!',result[i], name)
+            print('~ oh no!',result[i], name)
             return 'BAD BAD BAD BAD'
     print('query succesful on', url)
     return final_res
